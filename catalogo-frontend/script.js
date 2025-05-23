@@ -17,10 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const clienteSelect = document.getElementById("cliente-select");
   const btnAgregarCliente = document.getElementById("btn-agregar-cliente");
   const getImagenSrc = (imagen) => {
-  return imagen.startsWith("http")
-    ? imagen
-    : `http://localhost:3000/images/${encodeURIComponent(imagen)}`;
-};
+    return imagen.startsWith("http")
+      ? imagen
+      : `https://catalogo-backend-jkhy.onrender.com/images/${encodeURIComponent(imagen)}`;
+  };
+  
 
 const modalCliente = document.getElementById("modal-cliente");
 const cerrarModalCliente = document.getElementById("cerrar-modal-cliente");
@@ -90,7 +91,7 @@ formNuevoCliente.addEventListener("submit", async (e) => {
   }
 
   try {
-    const res = await fetch("http://localhost:3000/api/clientes", {
+    const res = await fetch("https://catalogo-backend-jkhy.onrender.com/api/clientes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cliente)
@@ -242,7 +243,7 @@ formNuevoCliente.addEventListener("submit", async (e) => {
   
     try {
       // 1️⃣ Obtener datos del cliente desde el backend
-      const clienteRes = await fetch(`http://localhost:3000/api/clientes/nombre/${encodeURIComponent(nombreCliente)}`);
+      const clienteRes = await fetch(`https://catalogo-backend-jkhy.onrender.com/api/clientes/nombre/${encodeURIComponent(nombreCliente)}`);
       const clienteDatos = await clienteRes.json();
   
       if (!clienteDatos || !clienteDatos.nombre) {
@@ -266,7 +267,7 @@ formNuevoCliente.addEventListener("submit", async (e) => {
       };
   
       // 3️⃣ Guardar el pedido en el backend
-      const res = await fetch('http://localhost:3000/api/pedidos', {
+      const res = await fetch('https://catalogo-backend-jkhy.onrender.com/api/pedidos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(pedido)
@@ -343,7 +344,7 @@ mensaje += `\n💰 *Total:* $${total}`;
 
   async function cargarHistorial(cliente) {
     try {
-      const res = await fetch(`http://localhost:3000/api/pedidos/${cliente}`);
+      const res = await fetch(`https://catalogo-backend-jkhy.onrender.com/api/pedidos/${cliente}`);
       const pedidos = await res.json();
   
       if (pedidos.length === 0) {
@@ -383,7 +384,7 @@ mensaje += `\n💰 *Total:* $${total}`;
       return imagen;
     }
     // En caso contrario, asumimos que está en la carpeta "images" del backend
-    return `http://localhost:3000/images/${imagen}`;
+    return `https://catalogo-backend-jkhy.onrender.com/images/${imagen}`;
   };
   
   const abrirModal = (index) => {
@@ -428,7 +429,7 @@ mensaje += `\n💰 *Total:* $${total}`;
 
   async function cargarProductosDesdeBackend() {
     try {
-      const res = await fetch('http://localhost:3000/api/productos');
+      const res = await fetch('https://catalogo-backend-jkhy.onrender.com/api/productos');
       productos = await res.json();
       renderizarProductos();
     } catch (error) {
@@ -437,7 +438,7 @@ mensaje += `\n💰 *Total:* $${total}`;
   }
   async function cargarClientesDesdeBackend() {
     try {
-      const res = await fetch("http://localhost:3000/api/clientes");
+      const res = await fetch("https://catalogo-backend-jkhy.onrender.com/api/clientes");
       const clientes = await res.json();
   
       clientes.forEach(cliente => {
