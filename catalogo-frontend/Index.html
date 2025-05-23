@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catálogo Decoservi.</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1 id="titulo">
+      <img src="./images/icono.png" alt="logo de decoservi" id="logo_titulo">
+      Catálogo Decoservi.
+    </h1>
+    <div id="cliente-container">
+      <div id="nuevo-cliente" style="display: flex; align-items: center; gap: 10px; margin-top: 0;">
+        <!-- <input type="text" id="input-nuevo-cliente" placeholder="Nombre nuevo cliente"> -->
+        <button id="btn-agregar-cliente">Agregar cliente</button>
+                  <!-- Modal de Agregar Cliente -->
+          <div id="modal-cliente" class="modal hidden">
+            <div class="modal-contenido">
+              <span id="cerrar-modal-cliente" class="cerrar-modal-cliente">&times;</span>
+              <h2>Agregar Nuevo Cliente</h2>
+              <form id="form-nuevo-cliente">
+                <label for="cliente-nombre">Nombre:</label>
+                <input type="text" id="cliente-nombre" name="nombre" required>
+                
+                <label for="cliente-telefono">Teléfono:</label>
+                <input type="tel" id="cliente-telefono" name="telefono" pattern="^\d{10}$" required title="Debe tener exactamente 10 dígitos numéricos.">
+
+                <label for="cliente-direccion">Dirección:</label>
+                <input type="text" id="cliente-direccion" name="direccion" required>
+
+                <label for="cliente-municipio">Municipio:</label>
+                <input type="text" id="cliente-municipio" name="municipio" required>
+
+                <label>
+                  ¿Requiere factura electrónica?
+                  <input type="checkbox" id="cliente-factura" name="factura">
+                </label>
+
+                <div id="factura-extra" class="hidden">
+                  <label for="cliente-nit">NIT:</label>
+                  <input type="text" id="cliente-nit" name="nit" pattern="^\d{7,}$" title="Debe tener minimo 7 dígitos numéricos.">
+
+                  <label for="cliente-correo">Correo electrónico:</label>
+                  <input type="email" id="cliente-correo" name="correo" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Ingresa un correo válido, por ejemplo: nombre@ejemplo.com">
+                </div>
+
+                <button id="boton-cliente" type="submit">Guardar Cliente</button>
+              </form>
+              
+            </div>
+          </div>
+
+      </div>
+      <div id="cliente-busqueda" style="display: flex; align-items: center; gap: 10px; margin-top: 0;">
+        <label for="cliente-select">Cliente:</label>
+        <select id="cliente-select">
+          <option value="">-- Selecciona un cliente --</option>
+        </select>
+        <button id="ver-historial">Historial</button>
+      </div>
+    </div>
+    
+    <div id="historial-contenedor" class="hidden"></div>
+  </header>
+  <input type="text" id="search" placeholder="Buscar productos..." />
+
+  <div id="carrito-icono">
+    🛒 <span id="contador-carrito">0</span>
+  </div>
+
+  <div id="carrito-panel" class="hidden">
+    <h2>Carrito de Compras</h2>
+    <ul id="lista-carrito"></ul>
+    <button id="cerrar-carrito">Cerrar</button>
+    <button id="finalizar-pedido">Finalizar pedido</button>
+  </div>
+
+  <main id="product-container"></main>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <span id="cerrar-modal" class="cerrar">&times;</span>
+      <img id="modal-img" src="" alt="Producto" />
+      <h2 id="modal-titulo" style="margin: 0;"></h2>
+      <p id="modal-desc" style="margin: 0;"></p>
+      <p id="modal-precio" style="margin: 0;"></p>
+  
+      <label for="cantidad">Cantidad:</label>
+      <input type="number" id="cantidad" value="1" min="1" />
+  
+      <button id="modal-btn-carrito" class="btn-carrito">Agregar al carrito 🛒</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
