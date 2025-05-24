@@ -119,36 +119,41 @@ formNuevoCliente.addEventListener("submit", async (e) => {
   }
 });
 
-  const renderizarProductos = (productosParaRenderizar = productos) => {
-    productContainer.innerHTML = "";
+let productosFiltrados = [];
 
-    if (productosParaRenderizar.length === 0) {
-      const mensaje = document.createElement("div");
-      mensaje.className = "mensaje-no-resultados";
-      mensaje.textContent = "No se encontraron productos.";
-      productContainer.appendChild(mensaje);
-      return;
-    }
+const renderizarProductos = (productosParaRenderizar = productos) => {
+  productContainer.innerHTML = "";
+  productosFiltrados = productosParaRenderizar; // ✅ Guardar la lista activa
 
-    productosParaRenderizar.forEach((producto, index) => {
-      const card = document.createElement("div");
-      card.classList.add("product-card");
+  if (productosParaRenderizar.length === 0) {
+    const mensaje = document.createElement("div");
+    mensaje.className = "mensaje-no-resultados";
+    mensaje.textContent = "No se encontraron productos.";
+    productContainer.appendChild(mensaje);
+    return;
+  }
 
-      card.innerHTML = `
+  productosParaRenderizar.forEach((producto, index) => {
+    const card = document.createElement("div");
+    card.classList.add("product-card");
+
+    card.innerHTML = `
       <img src="${getImagenSrc(producto.imagen)}" alt="${producto.nombre}">
       <h3>${producto.nombre}</h3>
       <p><strong>Precio: $${producto.precio}</strong></p>
       <input type="number" min="1" value="1" id="cantidad-${index}">
-      <button class="btn-carrito" data-index="${index}">Agregar al carrito 🛒</button>`;
+      <button class="btn-carrito" onclick="agregarAlCarrito(${index})">Agregar al carrito 🛒</button>
+    `;
 
-      card.addEventListener("click", (e) => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
-        abrirModal(producto);
-      });
-      
-      productContainer.appendChild(card);
+    card.addEventListener("click", (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+      abrirModal(index);
     });
-  };
+
+    productContainer.appendChild(card);
+  });
+};
+
 const botones = document.querySelectorAll(".btn-carrito");
   botones.forEach((btn, idx) => {
     btn.addEventListener("click", (e) => {
@@ -181,27 +186,28 @@ function agregarAlCarritoDesdeProducto(producto) {
 }
 
 
-  window.agregarAlCarrito = (index) => {
-    const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value);
-    if (!Number.isInteger(cantidad) || cantidad < 1) {
-      alert("Cantidad inválida.");
-      return;
-    }
+window.agregarAlCarrito = (index) => {
+  const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value);
+  if (!Number.isInteger(cantidad) || cantidad < 1) {
+    alert("Cantidad inválida.");
+    return;
+  }
 
-    const producto = productos[index];
-    const productoEnCarrito = carrito.find(item => item.nombre === producto.nombre);
+  const producto = productosFiltrados[index]; // ✅ obtener desde productosFiltrados
+  const productoEnCarrito = carrito.find(item => item.nombre === producto.nombre);
 
-    if (productoEnCarrito) {
-      productoEnCarrito.cantidad += cantidad;
-    } else {
-      carrito.push({ ...producto, cantidad });
-      alert("✅ Producto agregado con éxito.");
-    }
+  if (productoEnCarrito) {
+    productoEnCarrito.cantidad += cantidad;
+  } else {
+    carrito.push({ ...producto, cantidad });
+    alert("✅ Producto agregado con éxito.");
+  }
 
-    renderizarCarrito();
-    actualizarContadorCarrito();
-    document.getElementById(`cantidad-${index}`).value = 1;
-  };
+  renderizarCarrito();
+  actualizarContadorCarrito();
+  document.getElementById(`cantidad-${index}`).value = 1;
+};
+
 
   const renderizarCarrito = () => {
     listaCarrito.innerHTML = "";
