@@ -133,25 +133,50 @@ const renderizarProductos = (productosParaRenderizar = productos) => {
     return;
   }
 
-  productosParaRenderizar.forEach((producto, index) => {
-    const card = document.createElement("div");
-    card.classList.add("product-card");
+productosParaRenderizar.forEach((producto, index) => {
+  const card = document.createElement("div");
+  card.classList.add("product-card");
 
-    card.innerHTML = `
-      <img src="${getImagenSrc(producto.imagen)}" alt="${producto.nombre}">
-      <h3>${producto.nombre}</h3>
-      <p><strong>Precio: $${producto.precio}</strong></p>
-      <input type="number" min="1" value="1" id="cantidad-${index}">
-      <button class="btn-carrito" onclick="agregarAlCarrito(${index})">Agregar al carrito 🛒</button>
-    `;
+  card.innerHTML = `
+    <img src="${getImagenSrc(producto.imagen)}" alt="${producto.nombre}">
+    <h3>${producto.nombre}</h3>
+    <p><strong>Precio: $${producto.precio}</strong></p>
+    <input type="number" min="1" value="1" id="cantidad-${index}">
+    <button class="btn-carrito">Agregar al carrito 🛒</button>
+  `;
 
-    card.addEventListener("click", (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
-      abrirModal(index);
-    });
-
-    productContainer.appendChild(card);
+  // ✅ Clic sobre tarjeta (excepto botón e input) abre modal
+  card.addEventListener("click", (e) => {
+    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+    abrirModal(producto); // pasamos el objeto producto
   });
+
+  // ✅ Clic en botón Agregar al carrito
+  const btn = card.querySelector(".btn-carrito");
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value);
+    if (!Number.isInteger(cantidad) || cantidad < 1) {
+      alert("Cantidad inválida.");
+      return;
+    }
+
+    const productoEnCarrito = carrito.find(item => item.nombre === producto.nombre);
+    if (productoEnCarrito) {
+      productoEnCarrito.cantidad += cantidad;
+    } else {
+      carrito.push({ ...producto, cantidad });
+      alert("✅ Producto agregado con éxito.");
+    }
+
+    renderizarCarrito();
+    actualizarContadorCarrito();
+    document.getElementById(`cantidad-${index}`).value = 1;
+  });
+
+  productContainer.appendChild(card);
+});
+
 };
 
 const botones = document.querySelectorAll(".btn-carrito");
@@ -424,7 +449,7 @@ mensaje += `\n💰 *Total:* $${total}`;
   };
   
   const abrirModal = (producto) => {
-    productoActualIndex = producto; // ahora es el objeto completo
+    productoActualIndex = producto;
     document.getElementById("modal-img").src = obtenerRutaImagen(producto.imagen);
     document.getElementById("modal-titulo").textContent = producto.nombre;
     document.getElementById("modal-desc").textContent = producto.descripcion;
@@ -432,6 +457,7 @@ mensaje += `\n💰 *Total:* $${total}`;
     cantidadInput.value = 1;
     modal.classList.remove("hidden");
   };
+  
   
 
   document.getElementById("modal-btn-carrito").addEventListener("click", () => {
