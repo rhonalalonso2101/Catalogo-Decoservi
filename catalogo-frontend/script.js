@@ -139,17 +139,47 @@ formNuevoCliente.addEventListener("submit", async (e) => {
       <h3>${producto.nombre}</h3>
       <p><strong>Precio: $${producto.precio}</strong></p>
       <input type="number" min="1" value="1" id="cantidad-${index}">
-      <button class="btn-carrito" onclick="agregarAlCarrito(${index})">Agregar al carrito 🛒</button>
-      `;
+      <button class="btn-carrito" data-index="${index}">Agregar al carrito 🛒</button>`;
 
       card.addEventListener("click", (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
-        abrirModal(index);
+        abrirModal(producto);
       });
-
+      
       productContainer.appendChild(card);
     });
   };
+const botones = document.querySelectorAll(".btn-carrito");
+  botones.forEach((btn, idx) => {
+    btn.addEventListener("click", (e) => {
+    e.stopPropagation(); // evitar que se abra el modal
+    const producto = productosParaRenderizar[idx];
+    agregarAlCarritoDesdeProducto(producto);
+    document.getElementById(`cantidad-${idx}`).value = 1;
+  });
+});
+
+function agregarAlCarritoDesdeProducto(producto) {
+  const input = document.querySelector(`#cantidad-${productos.findIndex(p => p.nombre === producto.nombre)}`);
+  const cantidad = parseInt(input?.value) || 1;
+
+  if (!Number.isInteger(cantidad) || cantidad < 1) {
+    alert("Cantidad inválida.");
+    return;
+  }
+
+  const productoEnCarrito = carrito.find(item => item.nombre === producto.nombre);
+  if (productoEnCarrito) {
+    productoEnCarrito.cantidad += cantidad;
+  } else {
+    carrito.push({ ...producto, cantidad });
+    alert("✅ Producto agregado con éxito.");
+  }
+
+  renderizarCarrito();
+  actualizarContadorCarrito();
+}
+
 
   window.agregarAlCarrito = (index) => {
     const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value);
@@ -387,9 +417,8 @@ mensaje += `\n💰 *Total:* $${total}`;
     return `https://catalogo-backend-jkhy.onrender.com/images/${imagen}`;
   };
   
-  const abrirModal = (index) => {
-    const producto = productos[index];
-    productoActualIndex = index;
+  const abrirModal = (producto) => {
+    productoActualIndex = producto; // ahora es el objeto completo
     document.getElementById("modal-img").src = obtenerRutaImagen(producto.imagen);
     document.getElementById("modal-titulo").textContent = producto.nombre;
     document.getElementById("modal-desc").textContent = producto.descripcion;
@@ -397,6 +426,7 @@ mensaje += `\n💰 *Total:* $${total}`;
     cantidadInput.value = 1;
     modal.classList.remove("hidden");
   };
+  
 
   document.getElementById("modal-btn-carrito").addEventListener("click", () => {
     const cantidad = Number(cantidadInput.value);
@@ -404,7 +434,7 @@ mensaje += `\n💰 *Total:* $${total}`;
       alert("Por favor, ingresa una cantidad válida (número entero positivo).");
       return;
     }
-    const producto = productos[productoActualIndex];
+    const producto = productoActualIndex;
     const productoEnCarrito = carrito.find(item => item.nombre === producto.nombre);
     if (productoEnCarrito) {
       productoEnCarrito.cantidad += cantidad;
@@ -416,6 +446,7 @@ mensaje += `\n💰 *Total:* $${total}`;
     actualizarContadorCarrito();
     modal.classList.add("hidden");
   });
+  
 
   const buscarProductos = () => {
     const termino = document.getElementById("search").value.toLowerCase();
