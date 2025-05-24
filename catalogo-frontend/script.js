@@ -368,7 +368,7 @@ mensaje += `\n💰 *Total:* $${total}`;
 
   
         // 5️⃣ Redirigir a WhatsApp
-        const enlace = `https://wa.me/573102734013?text=${encodeURIComponent(mensaje)}`;
+        const enlace = `https://wa.me/573213947878?text=${encodeURIComponent(mensaje)}`;
         window.open(enlace, "_blank");
   
         // 6️⃣ Limpiar estado
