@@ -67,25 +67,25 @@ formNuevoCliente.addEventListener("submit", async (e) => {
   console.log("Cliente enviado al backend:", cliente);
 
   if (!cliente.nombre) {
-    alert("El nombre es obligatorio.");
+    Swal.fire("El nombre es obligatorio.");
     return;
   }
 
   if (!/^\d{10}$/.test(cliente.telefono)) {
-    alert('El teléfono debe tener exactamente 10 dígitos numéricos.');
+    Swal.fire('El teléfono debe tener exactamente 10 dígitos numéricos.');
     return;
   }
 
   // ✅ Solo validar si el checkbox está activo
   if (requiereFactura) {
     if (!/^\d{7,}$/.test(cliente.nit)) {
-      alert('El NIT debe tener al menos 7 dígitos numéricos.');
+      Swal.fire('El NIT debe tener al menos 7 dígitos numéricos.');
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(cliente.correo)) {
-      alert('Por favor ingresa un correo electrónico válido.');
+      Swal.fire('Por favor ingresa un correo electrónico válido.');
       return;
     }
   }
@@ -107,15 +107,15 @@ formNuevoCliente.addEventListener("submit", async (e) => {
       modalCliente.classList.add("hidden");
       formNuevoCliente.reset();
       camposFactura.classList.add("hidden");
-      alert("✅ Cliente agregado con éxito.");
+      Swal.fire("✅ Cliente agregado con éxito.");
     } else if (res.status === 409) {
-      alert("⚠️ El cliente ya existe.");
+      Swal.fire("⚠️ El cliente ya existe.");
     } else {
-      alert("❌ Error al agregar el cliente.");
+      Swal.fire("❌ Error al agregar el cliente.");
     }
   } catch (error) {
     console.error("Error al agregar cliente:", error);
-    alert("❌ Error de red al agregar cliente.");
+    Swal.fire("❌ Error de red al agregar cliente.");
   }
 });
 
@@ -157,7 +157,7 @@ productosParaRenderizar.forEach((producto, index) => {
     e.stopPropagation();
     const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value);
     if (!Number.isInteger(cantidad) || cantidad < 1) {
-      alert("Cantidad inválida.");
+      Swal.fire("Cantidad inválida.");
       return;
     }
 
@@ -166,7 +166,7 @@ productosParaRenderizar.forEach((producto, index) => {
       productoEnCarrito.cantidad += cantidad;
     } else {
       carrito.push({ ...producto, cantidad });
-      alert("✅ Producto agregado con éxito.");
+      Swal.fire("✅ Producto agregado con éxito.");
     }
 
     renderizarCarrito();
@@ -194,7 +194,7 @@ function agregarAlCarritoDesdeProducto(producto) {
   const cantidad = parseInt(input?.value) || 1;
 
   if (!Number.isInteger(cantidad) || cantidad < 1) {
-    alert("Cantidad inválida.");
+    Swal.fire("Cantidad inválida.");
     return;
   }
 
@@ -203,7 +203,7 @@ function agregarAlCarritoDesdeProducto(producto) {
     productoEnCarrito.cantidad += cantidad;
   } else {
     carrito.push({ ...producto, cantidad });
-    alert("✅ Producto agregado con éxito.");
+    Swal.fire("✅ Producto agregado con éxito.");
   }
 
   renderizarCarrito();
@@ -214,7 +214,7 @@ function agregarAlCarritoDesdeProducto(producto) {
 window.agregarAlCarrito = (index) => {
   const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value);
   if (!Number.isInteger(cantidad) || cantidad < 1) {
-    alert("Cantidad inválida.");
+    Swal.fire("Cantidad inválida.");
     return;
   }
 
@@ -225,7 +225,7 @@ window.agregarAlCarrito = (index) => {
     productoEnCarrito.cantidad += cantidad;
   } else {
     carrito.push({ ...producto, cantidad });
-    alert("✅ Producto agregado con éxito.");
+    Swal.fire("✅ Producto agregado con éxito.");
   }
 
   renderizarCarrito();
@@ -264,7 +264,7 @@ window.agregarAlCarrito = (index) => {
         const index = parseInt(e.target.getAttribute('data-index'));
         const nuevaCantidad = parseInt(e.target.value);
         if (!Number.isInteger(nuevaCantidad) || nuevaCantidad < 1) {
-          alert("Cantidad inválida. Debe ser un número entero positivo.");
+          Swal.fire("Cantidad inválida. Debe ser un número entero positivo.");
           renderizarCarrito();
           return;
         }
@@ -293,12 +293,12 @@ window.agregarAlCarrito = (index) => {
     const nombreCliente = clienteSelect.value;
   
     if (!nombreCliente) {
-      alert("Selecciona un cliente.");
+      Swal.fire("Selecciona un cliente.");
       return;
     }
   
     if (carrito.length === 0) {
-      alert("El carrito está vacío.");
+      Swal.fire("El carrito está vacío.");
       return;
     }
   
@@ -308,7 +308,7 @@ window.agregarAlCarrito = (index) => {
       const clienteDatos = await clienteRes.json();
   
       if (!clienteDatos || !clienteDatos.nombre) {
-        alert("❌ No se encontró el cliente en la base de datos.");
+        Swal.fire("❌ No se encontró el cliente en la base de datos.");
         return;
       }
   
@@ -335,7 +335,7 @@ window.agregarAlCarrito = (index) => {
       });
   
       if (res.ok) {
-        alert("✅ Pedido guardado correctamente.");
+        Swal.fire("✅ Pedido guardado correctamente.");
 
         const ahora = new Date();
         const fecha = ahora.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -377,7 +377,7 @@ mensaje += `\n💰 *Total:* $${total}`;
         actualizarContadorCarrito();
         cargarHistorial(nombreCliente);
       } else {
-        alert("❌ Error al guardar el pedido.");
+        Swal.fire("❌ Error al guardar el pedido.");
       }
   
     } catch (error) {
@@ -389,7 +389,7 @@ mensaje += `\n💰 *Total:* $${total}`;
   historialBtn.addEventListener("click", () => {
     const cliente = clienteSelect.value;
     if (!cliente) {
-      alert("Selecciona un cliente para ver su historial.");
+      Swal.fire("Selecciona un cliente para ver su historial.");
       return;
     }
     historialContenedor.classList.toggle("hidden");
@@ -463,7 +463,7 @@ mensaje += `\n💰 *Total:* $${total}`;
   document.getElementById("modal-btn-carrito").addEventListener("click", () => {
     const cantidad = Number(cantidadInput.value);
     if (!Number.isInteger(cantidad) || cantidad < 1) {
-      alert("Por favor, ingresa una cantidad válida (número entero positivo).");
+      Swal.fire("Por favor, ingresa una cantidad válida (número entero positivo).");
       return;
     }
     const producto = productoActualIndex;
@@ -472,7 +472,7 @@ mensaje += `\n💰 *Total:* $${total}`;
       productoEnCarrito.cantidad += cantidad;
     } else {
       carrito.push({ ...producto, cantidad });
-      alert("✅ Producto agregado con exito.");
+      Swal.fire("✅ Producto agregado con exito.");
     }
     renderizarCarrito();
     actualizarContadorCarrito();
