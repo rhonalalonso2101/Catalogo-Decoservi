@@ -67,11 +67,7 @@ formNuevoCliente.addEventListener("submit", async (e) => {
   console.log("Cliente enviado al backend:", cliente);
 
   if (!cliente.nombre) {
-    Swal.fire({
-      icon: 'warning',
-      text: 'El nombre es obligatorio.',
-    });
-    
+    Swal.fire("El nombre es obligatorio.", "", "warning");
     return;
   }
 
