@@ -6,7 +6,10 @@ body {
 }
 
 header {
-    background: #078111;
+    background-image: url("images/fondo.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     padding: 1rem;
     text-align: center;
     color: black;
