@@ -360,7 +360,7 @@ let total = 0;
 carrito.forEach(p => {
   const subtotal = p.precio * p.cantidad;
   total += subtotal;
-  mensaje += `• ${p.nombre} x${p.cantidad} - $${p.precio} = $${subtotal}\n`;
+  mensaje += `• *${p.cantidad}* - ${p.nombre} - $${p.precio} = $${subtotal}\n`;
 });
 
 mensaje += `\n💰 *Total:* $${total}`;
