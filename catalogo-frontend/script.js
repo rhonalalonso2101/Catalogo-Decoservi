@@ -31,10 +31,12 @@ const camposFactura = document.getElementById("factura-extra");
 
 btnAgregarCliente.addEventListener("click", () => {
   modalCliente.classList.remove("hidden");
+  document.getElementById("search").classList.add("ocultar"); // ✅ Ocultar input
 });
 
 cerrarModalCliente.addEventListener("click", () => {
   modalCliente.classList.add("hidden");
+  document.getElementById("search").classList.remove("ocultar"); // ✅ Mostrar input
 });
 
 // Mostrar/ocultar campos NIT y correo
@@ -286,8 +288,18 @@ window.agregarAlCarrito = (index) => {
     contadorCarrito.textContent = totalItems;
   };
 
-  const mostrarCarrito = () => carritoPanel.classList.toggle("hidden");
-  const cerrarCarrito = () => carritoPanel.classList.add("hidden");
+  const mostrarCarrito = () => {
+    carritoPanel.classList.toggle("hidden");
+    if (!carritoPanel.classList.contains("hidden")) {
+      document.getElementById("search").classList.add("ocultar"); // ✅ Ocultar al abrir
+    } else {
+      document.getElementById("search").classList.remove("ocultar"); // ✅ Mostrar al cerrar
+    }
+  };
+  const cerrarCarrito = () => {
+    carritoPanel.classList.add("hidden");
+    document.getElementById("search").classList.remove("ocultar"); // ✅ Mostrar
+  };
 
   finalizarPedido.addEventListener("click", async () => {
     const nombreCliente = clienteSelect.value;
@@ -437,7 +449,11 @@ mensaje += `\n💰 *Total:* $${total}`;
 
   carritoIcono.addEventListener("click", mostrarCarrito);
   document.getElementById("cerrar-carrito").addEventListener("click", cerrarCarrito);
-  cerrarModal.addEventListener("click", () => modal.classList.add("hidden"));
+  cerrarModal.addEventListener("click", () => {
+    modal.classList.add("hidden");
+    document.getElementById("search").classList.remove("ocultar"); // ✅ Mostrar input al cerrar modal
+  });
+
 
   const obtenerRutaImagen = (imagen) => {
     // Si ya es una URL completa (http o https), no la tocamos
@@ -456,6 +472,8 @@ mensaje += `\n💰 *Total:* $${total}`;
     document.getElementById("modal-precio").textContent = `Precio: $${producto.precio}`;
     cantidadInput.value = 1;
     modal.classList.remove("hidden");
+    // Ocultar el input de búsqueda
+    document.getElementById("search").classList.add("ocultar");
   };
   
   
