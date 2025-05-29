@@ -156,8 +156,8 @@ productosParaRenderizar.forEach((producto, index) => {
   const btn = card.querySelector(".btn-carrito");
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
-    const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value);
-    if (!Number.isNaN(cantidad) || cantidad < 1) {
+    const cantidad = parseFloat(document.getElementById(`cantidad-${index}`).value);
+    if (isNaN(cantidad) || cantidad < 1) {
       Swal.fire("Cantidad inválida.", "", "warning");
       return;
     }
@@ -192,9 +192,9 @@ const botones = document.querySelectorAll(".btn-carrito");
 
 function agregarAlCarritoDesdeProducto(producto) {
   const input = document.querySelector(`#cantidad-${productos.findIndex(p => p.nombre === producto.nombre)}`);
-  const cantidad = parseInt(input?.value) || 1;
+  const cantidad = parseFloat(input?.value) || 1;
 
-  if (!Number.isNaN(cantidad) || cantidad < 1) {
+  if (isNaN(cantidad) || cantidad < 1) {
     Swal.fire("Cantidad inválida.", "", "warning");
     return;
   }
@@ -213,8 +213,8 @@ function agregarAlCarritoDesdeProducto(producto) {
 
 
 window.agregarAlCarrito = (index) => {
-  const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value);
-  if (!Number.isNaN(cantidad) || cantidad < 1) {
+  const cantidad = parseFloat(document.getElementById(`cantidad-${index}`).value);
+  if (isNaN(cantidad) || cantidad < 1) {
     Swal.fire("Cantidad inválida.", "", "warning");
     return;
   }
@@ -262,8 +262,8 @@ window.agregarAlCarrito = (index) => {
 
     document.querySelectorAll('.input-cantidad').forEach(input => {
       input.addEventListener('change', (e) => {
-        const index = parseInt(e.target.getAttribute('data-index'));
-        const nuevaCantidad = parseInt(e.target.value);
+        const index = parseFloat(e.target.getAttribute('data-index'));
+        const nuevaCantidad = parseFloat(e.target.value);
         if (!Number.isNaN(nuevaCantidad) || nuevaCantidad < 1) {
           Swal.fire("Cantidad inválida. Debe ser un número positivo.", "", "warning");
           renderizarCarrito();
