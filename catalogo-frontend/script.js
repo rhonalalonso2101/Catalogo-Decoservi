@@ -145,7 +145,7 @@ let checkTallas = '';
         <label><input type="radio" name="talla-${index}" value="S"> S</label>
         <label><input type="radio" name="talla-${index}" value="M"> M</label>
         <label><input type="radio" name="talla-${index}" value="L"> L</label>
-        <label><input type="radio" name="talla-${index}" value="XL"> XL</label>
+        <label><input type="radio" name="talla-${index}" value="XL">  XL</label>
       </div>
     `;
   }
