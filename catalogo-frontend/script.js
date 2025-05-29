@@ -157,7 +157,7 @@ productosParaRenderizar.forEach((producto, index) => {
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
     const cantidad = parseFloat(document.getElementById(`cantidad-${index}`).value);
-    if (isNaN(cantidad) || cantidad < 1) {
+    if (isNaN(cantidad) || cantidad <= 0) {
       Swal.fire("Cantidad inválida.", "", "warning");
       return;
     }
@@ -194,7 +194,7 @@ function agregarAlCarritoDesdeProducto(producto) {
   const input = document.querySelector(`#cantidad-${productos.findIndex(p => p.nombre === producto.nombre)}`);
   const cantidad = parseFloat(input?.value) || 1;
 
-  if (isNaN(cantidad) || cantidad < 1) {
+  if (isNaN(cantidad) || cantidad <= 0) {
     Swal.fire("Cantidad inválida.", "", "warning");
     return;
   }
@@ -214,7 +214,7 @@ function agregarAlCarritoDesdeProducto(producto) {
 
 window.agregarAlCarrito = (index) => {
   const cantidad = parseFloat(document.getElementById(`cantidad-${index}`).value);
-  if (isNaN(cantidad) || cantidad < 1) {
+  if (isNaN(cantidad) || cantidad <= 0) {
     Swal.fire("Cantidad inválida.", "", "warning");
     return;
   }
