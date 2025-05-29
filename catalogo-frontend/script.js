@@ -138,13 +138,28 @@ productosParaRenderizar.forEach((producto, index) => {
   const card = document.createElement("div");
   card.classList.add("product-card");
 
-  card.innerHTML = `
-    <img src="${getImagenSrc(producto.imagen)}" alt="${producto.nombre}">
-    <h3>${producto.nombre}</h3>
-    <p><strong>Precio: $${producto.precio}</strong></p>
-    <input type="number" min="0.1" value="1" id="cantidad-${index}">
-    <button class="btn-carrito">Agregar al carrito 🛒</button>
-  `;
+let checkTallas = '';
+  if (/guante/i.test(producto.nombre) && !/guantes manipul/i.test(producto.nombre)) {
+    checkTallas = `
+      <div id="tallas-${index}">
+        <label><input type="radio" name="talla-${index}" value="S"> S</label>
+        <label><input type="radio" name="talla-${index}" value="M"> M</label>
+        <label><input type="radio" name="talla-${index}" value="L"> L</label>
+        <label><input type="radio" name="talla-${index}" value="XL"> L</label>
+      </div>
+    `;
+  }
+
+card.innerHTML = `
+  <img src="${getImagenSrc(producto.imagen)}" alt="${producto.nombre}">
+  <h3>${producto.nombre}</h3>
+  <p><strong>Precio: $${producto.precio}</strong></p>
+  <input type="number" min="0.1" step="0.1" value="1" id="cantidad-${index}">
+  ${checkTallas}
+  <button class="btn-carrito">Agregar al carrito 🛒</button>
+`;
+
+
 
   // ✅ Clic sobre tarjeta (excepto botón e input) abre modal
   card.addEventListener("click", (e) => {
@@ -154,30 +169,52 @@ productosParaRenderizar.forEach((producto, index) => {
 
   // ✅ Clic en botón Agregar al carrito
   const btn = card.querySelector(".btn-carrito");
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const cantidad = parseFloat(document.getElementById(`cantidad-${index}`).value);
-    if (isNaN(cantidad) || cantidad <= 0) {
-      Swal.fire("Cantidad inválida.", "", "warning");
+btn.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  const cantidad = parseFloat(document.getElementById(`cantidad-${index}`).value);
+  if (isNaN(cantidad) || cantidad <= 0) {
+    Swal.fire("Cantidad inválida.", "", "warning");
+    return;
+  }
+
+  let talla = null;
+  if (/guantes/i.test(producto.nombre) && !/guantes manipul/i.test(producto.nombre)) {
+    const radios = document.getElementsByName(`talla-${index}`);
+    for (let r of radios) {
+      if (r.checked) {
+        talla = r.value;
+        break;
+      }
+    }
+    if (!talla) {
+      Swal.fire("Selecciona una talla antes de agregar al carrito.", "", "warning");
       return;
     }
+  }
 
-    const productoEnCarrito = carrito.find(item => item.nombre === producto.nombre);
-    if (productoEnCarrito) {
-      productoEnCarrito.cantidad += cantidad;
-    } else {
-      carrito.push({ ...producto, cantidad });
-      Swal.fire("✅ Producto agregado con éxito.", "", "success");
-    }
+  let productoEnCarrito;
+  if (talla) {
+    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && item.talla === talla);
+  } else {
+    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && !item.talla);
+  }
 
-    renderizarCarrito();
-    actualizarContadorCarrito();
-    document.getElementById(`cantidad-${index}`).value = 1;
-  });
+  if (productoEnCarrito) {
+    productoEnCarrito.cantidad += cantidad;
+  } else {
+    carrito.push({ ...producto, cantidad, ...(talla && { talla }) });
+    Swal.fire("✅ Producto agregado con éxito.", "", "success");
+  }
+
+  renderizarCarrito();
+  actualizarContadorCarrito();
+  document.getElementById(`cantidad-${index}`).value = 1;
+});
+
 
   productContainer.appendChild(card);
 });
-
 };
 
 const botones = document.querySelectorAll(".btn-carrito");
@@ -214,18 +251,41 @@ function agregarAlCarritoDesdeProducto(producto) {
 
 window.agregarAlCarrito = (index) => {
   const cantidad = parseFloat(document.getElementById(`cantidad-${index}`).value);
+  const producto = productosFiltrados[index];
+  let talla = null;
+
   if (isNaN(cantidad) || cantidad <= 0) {
     Swal.fire("Cantidad inválida.", "", "warning");
     return;
   }
 
-  const producto = productosFiltrados[index]; // ✅ obtener desde productosFiltrados
-  const productoEnCarrito = carrito.find(item => item.nombre === producto.nombre);
+  if (/guantes/i.test(producto.nombre) && !/guantes manipul/i.test(producto.nombre)) {
+    const radios = document.getElementsByName(`talla-${index}`);
+    for (let r of radios) {
+      if (r.checked) {
+        talla = r.value;
+        break;
+      }
+    }
+
+    if (!talla) {
+      Swal.fire("Selecciona una talla antes de agregar al carrito.", "", "warning");
+      return;
+    }
+  }
+
+  let productoEnCarrito;
+
+  if (talla) {
+    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && item.talla === talla);
+  } else {
+    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && !item.talla);
+  }
 
   if (productoEnCarrito) {
     productoEnCarrito.cantidad += cantidad;
   } else {
-    carrito.push({ ...producto, cantidad });
+    carrito.push({ ...producto, cantidad, ...(talla && { talla }) });
     Swal.fire("✅ Producto agregado con éxito.", "", "success");
   }
 
@@ -233,6 +293,7 @@ window.agregarAlCarrito = (index) => {
   actualizarContadorCarrito();
   document.getElementById(`cantidad-${index}`).value = 1;
 };
+
 
 
   const renderizarCarrito = () => {
@@ -246,6 +307,7 @@ window.agregarAlCarrito = (index) => {
       const li = document.createElement("li");
       li.innerHTML = `
         <strong>${item.nombre}</strong><br/>
+        ${item.talla ? `<br/>Talla: ${item.talla}` : ''}<br/>
         Cantidad: 
         <input type="number" min="0.1" step="0.1" value="${item.cantidad}" class="input-cantidad" data-index="${i}">
         <br/>- Precio unitario: $${item.precio}<br/> - Subtotal: $${subtotal}<br/>
@@ -371,8 +433,10 @@ let total = 0;
 carrito.forEach(p => {
   const subtotal = p.precio * p.cantidad;
   total += subtotal;
-  mensaje += `• *${p.cantidad}* - ${p.nombre} - $${p.precio} = $${subtotal}\n`;
+  const tallaTexto = p.talla ? ` - Talla: ${p.talla}` : '';
+  mensaje += `• ${p.cantidad} - ${p.nombre}${tallaTexto} - $${p.precio} = $${subtotal}\n`;
 });
+
 
 mensaje += `\n💰 *Total:* $${total}`;
 
@@ -464,11 +528,26 @@ mensaje += `\n💰 *Total:* $${total}`;
   };
   
   const abrirModal = (producto) => {
-    productoActualIndex = producto;
+    productoActualIndex = productos.findIndex(p => p.nombre === producto.nombre);
     document.getElementById("modal-img").src = obtenerRutaImagen(producto.imagen);
     document.getElementById("modal-titulo").textContent = producto.nombre;
     document.getElementById("modal-desc").textContent = producto.descripcion;
     document.getElementById("modal-precio").textContent = `Precio: $${producto.precio}`;
+    // Insertar checkboxes de talla si el producto es guante (excepto "GUANTES MANIPUL")
+    const tallasContainer = document.getElementById("modal-tallas");
+    if (/guantes/i.test(producto.nombre) && !/guantes manipul/i.test(producto.nombre)) {
+      tallasContainer.innerHTML = `
+        <label><input type="radio" name="modal-talla" value="S"> S</label>
+        <label><input type="radio" name="modal-talla" value="M"> M</label>
+        <label><input type="radio" name="modal-talla" value="L"> L</label>
+        <label><input type="radio" name="modal-talla" value="XL"> XL</label>
+      `;
+      tallasContainer.classList.remove("hidden");
+    } else {
+      tallasContainer.innerHTML = "";
+      tallasContainer.classList.add("hidden");
+    }
+
     cantidadInput.value = 1;
     modal.classList.remove("hidden");
     // Ocultar el input de búsqueda
@@ -478,23 +557,56 @@ mensaje += `\n💰 *Total:* $${total}`;
   
 
   document.getElementById("modal-btn-carrito").addEventListener("click", () => {
-    const cantidad = parseFloat(cantidadInput.value);
-    if (isNaN(cantidad) || cantidad <= 0) {
-      Swal.fire("Por favor, ingresa una cantidad válida (número entero positivo).", "", "warning");
+  const cantidad = parseFloat(cantidadInput.value);
+  if (isNaN(cantidad) || cantidad <= 0) {
+    Swal.fire("Por favor, ingresa una cantidad válida (número positivo).", "", "warning");
+    return;
+  }
+
+  const producto = productos[productoActualIndex];
+  let productoEnCarrito;
+
+  if (/guantes/i.test(producto.nombre) && !/guantes manipul/i.test(producto.nombre)) {
+    const radios = document.getElementsByName("modal-talla");
+    let talla = null;
+
+    for (let r of radios) {
+      if (r.checked) {
+        talla = r.value;
+        break;
+      }
+    }
+
+    if (!talla) {
+      Swal.fire("Selecciona una talla antes de agregar al carrito.", "", "warning");
       return;
     }
-    const producto = productoActualIndex;
-    const productoEnCarrito = carrito.find(item => item.nombre === producto.nombre);
+
+    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && item.talla === talla);
+    
+    if (productoEnCarrito) {
+      productoEnCarrito.cantidad += cantidad;
+    } else {
+      carrito.push({ ...producto, cantidad, talla });
+      Swal.fire("✅ Producto agregado con éxito.", "", "success");
+    }
+    
+  } else {
+    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre);
+
     if (productoEnCarrito) {
       productoEnCarrito.cantidad += cantidad;
     } else {
       carrito.push({ ...producto, cantidad });
-      Swal.fire("✅ Producto agregado con exito.", "", "success");
+      Swal.fire("✅ Producto agregado con éxito.", "", "success");
     }
-    renderizarCarrito();
-    actualizarContadorCarrito();
-    modal.classList.add("hidden");
-  });
+  }
+
+  renderizarCarrito();
+  actualizarContadorCarrito();
+  modal.classList.add("hidden");
+});
+
   
 
   const buscarProductos = () => {
@@ -534,3 +646,4 @@ mensaje += `\n💰 *Total:* $${total}`;
   cargarProductosDesdeBackend();
   cargarClientesDesdeBackend();
 });
+document.getElementById("search").classList.remove("ocultar");
