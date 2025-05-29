@@ -247,7 +247,7 @@ window.agregarAlCarrito = (index) => {
       li.innerHTML = `
         <strong>${item.nombre}</strong><br/>
         Cantidad: 
-        <input type="number" min="1" value="${item.cantidad}" class="input-cantidad" data-index="${i}">
+        <input type="number" min="0.1" step="0.1" value="${item.cantidad}" class="input-cantidad" data-index="${i}">
         <br/>- Precio unitario: $${item.precio}<br/> - Subtotal: $${subtotal}<br/>
         <button onclick="eliminarDelCarrito('${item.nombre}')">Eliminar</button>
       `;
@@ -264,7 +264,7 @@ window.agregarAlCarrito = (index) => {
       input.addEventListener('change', (e) => {
         const index = parseFloat(e.target.getAttribute('data-index'));
         const nuevaCantidad = parseFloat(e.target.value);
-        if (!Number.isNaN(nuevaCantidad) || nuevaCantidad < 1) {
+        if (isNaN(nuevaCantidad) || nuevaCantidad < 1) {
           Swal.fire("Cantidad inválida. Debe ser un número positivo.", "", "warning");
           renderizarCarrito();
           return;
@@ -478,8 +478,8 @@ mensaje += `\n💰 *Total:* $${total}`;
   
 
   document.getElementById("modal-btn-carrito").addEventListener("click", () => {
-    const cantidad = Number(cantidadInput.value);
-    if (!Number.isInteger(cantidad) || cantidad < 1) {
+    const cantidad = parseFloat(cantidadInput.value);
+    if (isNaN(cantidad) || cantidad <= 0) {
       Swal.fire("Por favor, ingresa una cantidad válida (número entero positivo).", "", "warning");
       return;
     }
