@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
       : `https://catalogo-backend-jkhy.onrender.com/images/${encodeURIComponent(imagen)}`;
   };
   
-
 const modalCliente = document.getElementById("modal-cliente");
 const cerrarModalCliente = document.getElementById("cerrar-modal-cliente");
 const formNuevoCliente = document.getElementById("form-nuevo-cliente");
@@ -143,7 +142,7 @@ productosParaRenderizar.forEach((producto, index) => {
     <img src="${getImagenSrc(producto.imagen)}" alt="${producto.nombre}">
     <h3>${producto.nombre}</h3>
     <p><strong>Precio: $${producto.precio}</strong></p>
-    <input type="number" min="1" value="1" id="cantidad-${index}">
+    <input type="number" min="0.1" value="1" id="cantidad-${index}">
     <button class="btn-carrito">Agregar al carrito 🛒</button>
   `;
 
@@ -158,7 +157,7 @@ productosParaRenderizar.forEach((producto, index) => {
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
     const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value);
-    if (!Number.isInteger(cantidad) || cantidad < 1) {
+    if (!Number.isNaN(cantidad) || cantidad < 1) {
       Swal.fire("Cantidad inválida.", "", "warning");
       return;
     }
@@ -195,7 +194,7 @@ function agregarAlCarritoDesdeProducto(producto) {
   const input = document.querySelector(`#cantidad-${productos.findIndex(p => p.nombre === producto.nombre)}`);
   const cantidad = parseInt(input?.value) || 1;
 
-  if (!Number.isInteger(cantidad) || cantidad < 1) {
+  if (!Number.isNaN(cantidad) || cantidad < 1) {
     Swal.fire("Cantidad inválida.", "", "warning");
     return;
   }
@@ -215,7 +214,7 @@ function agregarAlCarritoDesdeProducto(producto) {
 
 window.agregarAlCarrito = (index) => {
   const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value);
-  if (!Number.isInteger(cantidad) || cantidad < 1) {
+  if (!Number.isNaN(cantidad) || cantidad < 1) {
     Swal.fire("Cantidad inválida.", "", "warning");
     return;
   }
@@ -265,8 +264,8 @@ window.agregarAlCarrito = (index) => {
       input.addEventListener('change', (e) => {
         const index = parseInt(e.target.getAttribute('data-index'));
         const nuevaCantidad = parseInt(e.target.value);
-        if (!Number.isInteger(nuevaCantidad) || nuevaCantidad < 1) {
-          Swal.fire("Cantidad inválida. Debe ser un número entero positivo.", "", "warning");
+        if (!Number.isNaN(nuevaCantidad) || nuevaCantidad < 1) {
+          Swal.fire("Cantidad inválida. Debe ser un número positivo.", "", "warning");
           renderizarCarrito();
           return;
         }
