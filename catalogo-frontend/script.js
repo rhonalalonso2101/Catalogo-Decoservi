@@ -159,6 +159,20 @@ productosParaRenderizar.forEach((producto, index) => {
         </div>
       `;
     }
+  let checkMedidas = '';
+    if (/kilo bolsa basura/i.test(producto.nombre)) {
+      checkMedidas = `
+        <div id="medidas-${index}">
+          <label><input type="radio" name="medida-${index}" value="22"> 22</label>
+          <label><input type="radio" name="medida-${index}" value="24"> 24</label>
+          <label><input type="radio" name="medida-${index}" value="26"> 26</label>
+          <label><input type="radio" name="medida-${index}" value="28"> 28</label>
+          <label><input type="radio" name="medida-${index}" value="32"> 32</label>
+          <label><input type="radio" name="medida-${index}" value="39"> 39</label>
+        </div>
+      `;
+    }
+
 
 
 card.innerHTML = `
@@ -168,6 +182,7 @@ card.innerHTML = `
   <input type="number" min="0.1" step="0.1" value="1" id="cantidad-${index}">
   ${checkTallas}
   ${checkColores}
+  ${checkMedidas}
   <button class="btn-carrito">Agregar al carrito 🛒</button>
 `;
 
@@ -220,16 +235,34 @@ btn.addEventListener("click", (e) => {
       }
     }
 
+  let medida = null;
+    if (/kilo bolsa basura/i.test(producto.nombre)) {
+      const radios = document.getElementsByName(`medida-${index}`);
+      for (let r of radios) {
+        if (r.checked) {
+          medida = r.value;
+          break;
+        }
+      }
+      if (!medida) {
+        Swal.fire("Selecciona una medida antes de agregar al carrito.", "", "warning");
+        return;
+      }
+    }
+
+
   const productoEnCarrito = carrito.find(item =>
-          item.nombre === producto.nombre &&
-          (item.talla ?? null) === (talla ?? null) &&
-          (item.color ?? null) === (color ?? null)
-        );
+    item.nombre === producto.nombre &&
+    (item.talla ?? null) === (talla ?? null) &&
+    (item.color ?? null) === (color ?? null) &&
+    (item.medida ?? null) === (medida ?? null)
+  );
+
 
   if (productoEnCarrito) {
     productoEnCarrito.cantidad += cantidad;
   } else {
-    carrito.push({ ...producto, cantidad, ...(talla && { talla }), ...(color && { color }) });
+    carrito.push({...producto, cantidad,...(talla && { talla }), ...(color && { color }), ...(medida && { medida })});
     Swal.fire("✅ Producto agregado con éxito.", "", "success");
   }
 
@@ -324,7 +357,8 @@ window.agregarAlCarrito = (index) => {
       li.innerHTML = `
         <strong>${item.nombre}</strong><br/>
         ${item.talla ? `<br/>Talla: ${item.talla}` : ''}
-        ${item.color ? `<br/>Color: ${item.color}` : ''}<br/>
+        ${item.color ? `<br/>Color: ${item.color}` : ''}
+        ${item.medida ? `<br/>Medida: ${item.medida}` : ''}<br/>
         Cantidad: 
         <input type="number" min="0.1" step="0.1" value="${item.cantidad}" class="input-cantidad" data-index="${i}">
         <br/>- Precio unitario: $${item.precio}<br/> - Subtotal: $${subtotal}<br/>
@@ -452,7 +486,8 @@ carrito.forEach(p => {
   total += subtotal;
   const tallaTexto = p.talla ? ` - Talla: ${p.talla}` : '';
   const colorTexto = p.color ? ` - Color: ${p.color}` : '';
-  mensaje += `• ${p.cantidad} - ${p.nombre}${tallaTexto}${colorTexto} - $${p.precio} = $${subtotal}\n`;
+  const medidaTexto = p.medida ? ` - Medida: ${p.medida}` : '';
+  mensaje += `• ${p.cantidad} - ${p.nombre}${tallaTexto}${colorTexto}${medidaTexto} - $${p.precio} = $${subtotal}\n`;
 
 });
 
@@ -578,6 +613,22 @@ mensaje += `\n💰 *Total:* $${total}`;
       coloresContainer.innerHTML = "";
       coloresContainer.classList.add("hidden");
     }
+    const medidasContainer = document.getElementById("modal-medidas");
+    if (/kilo bolsa basura/i.test(producto.nombre)) {
+      medidasContainer.innerHTML = `
+        <label><input type="radio" name="modal-medida" value="22"> 22</label>
+        <label><input type="radio" name="modal-medida" value="24"> 24</label>
+        <label><input type="radio" name="modal-medida" value="26"> 26</label>
+        <label><input type="radio" name="modal-medida" value="28"> 28</label>
+        <label><input type="radio" name="modal-medida" value="32"> 32</label>
+        <label><input type="radio" name="modal-medida" value="39"> 39</label>
+      `;
+      medidasContainer.classList.remove("hidden");
+    } else {
+      medidasContainer.innerHTML = "";
+      medidasContainer.classList.add("hidden");
+    }
+
 
     cantidadInput.value = 1;
     modal.classList.remove("hidden");
@@ -626,16 +677,33 @@ mensaje += `\n💰 *Total:* $${total}`;
     }
   }
 
+  let medida = null;
+    if (/kilo bolsa basura/i.test(producto.nombre)) {
+      const radios = document.getElementsByName("modal-medida");
+      for (let r of radios) {
+        if (r.checked) {
+          medida = r.value;
+          break;
+        }
+      }
+      if (!medida) {
+        Swal.fire("Selecciona una medida antes de agregar al carrito.", "", "warning");
+        return;
+      }
+    }
+
+
   let productoEnCarrito = carrito.find(item =>
     item.nombre === producto.nombre &&
     (item.talla ?? null) === (talla ?? null) &&
-    (item.color ?? null) === (color ?? null)
+    (item.color ?? null) === (color ?? null) &&
+    (item.medida ?? null) === (medida ?? null)
   );
 
   if (productoEnCarrito) {
     productoEnCarrito.cantidad += cantidad;
   } else {
-    carrito.push({ ...producto, cantidad, ...(talla && { talla }), ...(color && { color }) });
+    carrito.push({ ...producto, cantidad, ...(talla && { talla }), ...(color && { color }), ...(medida && { medida }) });
     Swal.fire("✅ Producto agregado con éxito.", "", "success");
   }
 
@@ -643,8 +711,6 @@ mensaje += `\n💰 *Total:* $${total}`;
   actualizarContadorCarrito();
   modal.classList.add("hidden");
 });
-
-  
 
   const buscarProductos = () => {
     const termino = document.getElementById("search").value.toLowerCase();
