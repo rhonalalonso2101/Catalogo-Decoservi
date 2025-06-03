@@ -138,17 +138,28 @@ productosParaRenderizar.forEach((producto, index) => {
   const card = document.createElement("div");
   card.classList.add("product-card");
 
-let checkTallas = '';
-  if (/guante/i.test(producto.nombre) && !/guantes manipul/i.test(producto.nombre)) {
-    checkTallas = `
-      <div id="tallas-${index}">
-        <label><input type="radio" name="talla-${index}" value="S"> S</label>
-        <label><input type="radio" name="talla-${index}" value="M"> M</label>
-        <label><input type="radio" name="talla-${index}" value="L"> L</label>
-        <label><input type="radio" name="talla-${index}" value="XL">  XL</label>
-      </div>
-    `;
-  }
+  let checkTallas = '';
+    if (/guante/i.test(producto.nombre) && !/guantes manipul/i.test(producto.nombre)) {
+      checkTallas = `
+        <div id="tallas-${index}">
+          <label><input type="radio" name="talla-${index}" value="S"> S</label>
+          <label><input type="radio" name="talla-${index}" value="M"> M</label>
+          <label><input type="radio" name="talla-${index}" value="L"> L</label>
+          <label><input type="radio" name="talla-${index}" value="XL">  XL</label>
+        </div>
+      `;
+    }
+  let checkColores = '';
+    if (/bolsa plastica manija/i.test(producto.nombre)) {
+      checkColores = `
+        <div id="colores-${index}">
+          <label><input type="radio" name="color-${index}" value="Negro"> Negro</label>
+          <label><input type="radio" name="color-${index}" value="Blanco"> Blanco</label>
+          <label><input type="radio" name="color-${index}" value="Beige"> Beige</label>
+        </div>
+      `;
+    }
+
 
 card.innerHTML = `
   <img src="${getImagenSrc(producto.imagen)}" alt="${producto.nombre}">
@@ -156,6 +167,7 @@ card.innerHTML = `
   <p><strong>Precio: $${producto.precio}</strong></p>
   <input type="number" min="0.1" step="0.1" value="1" id="cantidad-${index}">
   ${checkTallas}
+  ${checkColores}
   <button class="btn-carrito">Agregar al carrito 🛒</button>
 `;
 
@@ -193,17 +205,31 @@ btn.addEventListener("click", (e) => {
     }
   }
 
-  let productoEnCarrito;
-  if (talla) {
-    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && item.talla === talla);
-  } else {
-    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && !item.talla);
-  }
+  let color = null;
+    if (/bolsa plastica manija/i.test(producto.nombre)) {
+      const radios = document.getElementsByName(`color-${index}`);
+      for (let r of radios) {
+        if (r.checked) {
+          color = r.value;
+          break;
+        }
+      }
+      if (!color) {
+        Swal.fire("Selecciona un color antes de agregar al carrito.", "", "warning");
+        return;
+      }
+    }
+
+  const productoEnCarrito = carrito.find(item =>
+          item.nombre === producto.nombre &&
+          (item.talla ?? null) === (talla ?? null) &&
+          (item.color ?? null) === (color ?? null)
+        );
 
   if (productoEnCarrito) {
     productoEnCarrito.cantidad += cantidad;
   } else {
-    carrito.push({ ...producto, cantidad, ...(talla && { talla }) });
+    carrito.push({ ...producto, cantidad, ...(talla && { talla }), ...(color && { color }) });
     Swal.fire("✅ Producto agregado con éxito.", "", "success");
   }
 
@@ -216,16 +242,6 @@ btn.addEventListener("click", (e) => {
   productContainer.appendChild(card);
 });
 };
-
-const botones = document.querySelectorAll(".btn-carrito");
-  botones.forEach((btn, idx) => {
-    btn.addEventListener("click", (e) => {
-    e.stopPropagation(); // evitar que se abra el modal
-    const producto = productosParaRenderizar[idx];
-    agregarAlCarritoDesdeProducto(producto);
-    document.getElementById(`cantidad-${idx}`).value = 1;
-  });
-});
 
 function agregarAlCarritoDesdeProducto(producto) {
   const input = document.querySelector(`#cantidad-${productos.findIndex(p => p.nombre === producto.nombre)}`);
@@ -276,18 +292,18 @@ window.agregarAlCarrito = (index) => {
 
   let productoEnCarrito;
 
-  if (talla) {
-    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && item.talla === talla);
-  } else {
-    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && !item.talla);
-  }
+    if (talla || color) {
+      productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && item.talla === talla && item.color === color);
+    } else {
+      productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && !item.talla && !item.color);
+    }
 
-  if (productoEnCarrito) {
-    productoEnCarrito.cantidad += cantidad;
-  } else {
-    carrito.push({ ...producto, cantidad, ...(talla && { talla }) });
-    Swal.fire("✅ Producto agregado con éxito.", "", "success");
-  }
+    if (productoEnCarrito) {
+      productoEnCarrito.cantidad += cantidad;
+    } else {
+      carrito.push({ ...producto, cantidad, ...(talla && { talla }), ...(color && { color }) });
+      Swal.fire("✅ Producto agregado con éxito.", "", "success");
+    }
 
   renderizarCarrito();
   actualizarContadorCarrito();
@@ -307,7 +323,8 @@ window.agregarAlCarrito = (index) => {
       const li = document.createElement("li");
       li.innerHTML = `
         <strong>${item.nombre}</strong><br/>
-        ${item.talla ? `<br/>Talla: ${item.talla}` : ''}<br/>
+        ${item.talla ? `<br/>Talla: ${item.talla}` : ''}
+        ${item.color ? `<br/>Color: ${item.color}` : ''}<br/>
         Cantidad: 
         <input type="number" min="0.1" step="0.1" value="${item.cantidad}" class="input-cantidad" data-index="${i}">
         <br/>- Precio unitario: $${item.precio}<br/> - Subtotal: $${subtotal}<br/>
@@ -434,7 +451,9 @@ carrito.forEach(p => {
   const subtotal = p.precio * p.cantidad;
   total += subtotal;
   const tallaTexto = p.talla ? ` - Talla: ${p.talla}` : '';
-  mensaje += `• ${p.cantidad} - ${p.nombre}${tallaTexto} - $${p.precio} = $${subtotal}\n`;
+  const colorTexto = p.color ? ` - Color: ${p.color}` : '';
+  mensaje += `• ${p.cantidad} - ${p.nombre}${tallaTexto}${colorTexto} - $${p.precio} = $${subtotal}\n`;
+
 });
 
 
@@ -547,6 +566,18 @@ mensaje += `\n💰 *Total:* $${total}`;
       tallasContainer.innerHTML = "";
       tallasContainer.classList.add("hidden");
     }
+    const coloresContainer = document.getElementById("modal-colores");
+    if (/bolsa plastica manija/i.test(producto.nombre)) {
+      coloresContainer.innerHTML = `
+        <label><input type="radio" name="modal-color" value="Negro"> Negro</label>
+        <label><input type="radio" name="modal-color" value="Blanco"> Blanco</label>
+        <label><input type="radio" name="modal-color" value="Beige"> Beige</label>
+      `;
+      coloresContainer.classList.remove("hidden");
+    } else {
+      coloresContainer.innerHTML = "";
+      coloresContainer.classList.add("hidden");
+    }
 
     cantidadInput.value = 1;
     modal.classList.remove("hidden");
@@ -564,42 +595,48 @@ mensaje += `\n💰 *Total:* $${total}`;
   }
 
   const producto = productos[productoActualIndex];
-  let productoEnCarrito;
+  let talla = null;
+  let color = null;
 
   if (/guantes/i.test(producto.nombre) && !/guantes manipul/i.test(producto.nombre)) {
     const radios = document.getElementsByName("modal-talla");
-    let talla = null;
-
     for (let r of radios) {
       if (r.checked) {
         talla = r.value;
         break;
       }
     }
-
     if (!talla) {
       Swal.fire("Selecciona una talla antes de agregar al carrito.", "", "warning");
       return;
     }
+  }
 
-    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre && item.talla === talla);
-    
-    if (productoEnCarrito) {
-      productoEnCarrito.cantidad += cantidad;
-    } else {
-      carrito.push({ ...producto, cantidad, talla });
-      Swal.fire("✅ Producto agregado con éxito.", "", "success");
+  if (/bolsa plastica manija/i.test(producto.nombre)) {
+    const radios = document.getElementsByName("modal-color");
+    for (let r of radios) {
+      if (r.checked) {
+        color = r.value;
+        break;
+      }
     }
-    
+    if (!color) {
+      Swal.fire("Selecciona un color antes de agregar al carrito.", "", "warning");
+      return;
+    }
+  }
+
+  let productoEnCarrito = carrito.find(item =>
+    item.nombre === producto.nombre &&
+    (item.talla ?? null) === (talla ?? null) &&
+    (item.color ?? null) === (color ?? null)
+  );
+
+  if (productoEnCarrito) {
+    productoEnCarrito.cantidad += cantidad;
   } else {
-    productoEnCarrito = carrito.find(item => item.nombre === producto.nombre);
-
-    if (productoEnCarrito) {
-      productoEnCarrito.cantidad += cantidad;
-    } else {
-      carrito.push({ ...producto, cantidad });
-      Swal.fire("✅ Producto agregado con éxito.", "", "success");
-    }
+    carrito.push({ ...producto, cantidad, ...(talla && { talla }), ...(color && { color }) });
+    Swal.fire("✅ Producto agregado con éxito.", "", "success");
   }
 
   renderizarCarrito();
