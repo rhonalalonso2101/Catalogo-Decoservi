@@ -829,11 +829,11 @@ mensaje += `\n💰 *Total:* $${total}`;
       const res = await fetch("https://catalogo-backend-jkhy.onrender.com/api/clientes");
       const clientes = await res.json();
   
+      const datalist = document.getElementById("clientes");
       clientes.forEach(cliente => {
         const option = document.createElement("option");
         option.value = cliente.nombre;
-        option.textContent = cliente.nombre;
-        clienteSelect.appendChild(option);
+        datalist.appendChild(option);
       });
     } catch (error) {
       console.error("Error al cargar clientes desde el backend:", error);

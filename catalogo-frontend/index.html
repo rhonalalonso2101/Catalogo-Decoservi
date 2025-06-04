@@ -58,9 +58,8 @@
       </div>
       <div id="cliente-busqueda" style="display: flex; align-items: center; gap: 10px; margin-top: 0;">
         <label for="cliente-select">Cliente:</label>
-        <select id="cliente-select">
-          <option value="">-- Selecciona un cliente --</option>
-        </select>
+        <input list="clientes" id="cliente-select" placeholder="Escribe el nombre del cliente" autocomplete="off" />
+        <datalist id="clientes"></datalist>
         <button id="ver-historial">Historial</button>
       </div>
     </div>
