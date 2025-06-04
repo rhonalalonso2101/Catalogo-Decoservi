@@ -262,7 +262,13 @@ btn.addEventListener("click", (e) => {
   if (productoEnCarrito) {
     productoEnCarrito.cantidad += cantidad;
   } else {
-    carrito.push({...producto, cantidad,...(talla && { talla }), ...(color && { color }), ...(medida && { medida })});
+    carrito.push({
+  ...producto,
+      cantidad,
+      talla: talla ?? null,
+      color: color ?? null,
+      medida: medida ?? null
+    });
     Swal.fire("✅ Producto agregado con éxito.", "", "success");
   }
 
@@ -289,7 +295,13 @@ function agregarAlCarritoDesdeProducto(producto) {
   if (productoEnCarrito) {
     productoEnCarrito.cantidad += cantidad;
   } else {
-    carrito.push({ ...producto, cantidad });
+    carrito.push({
+      ...producto,
+      cantidad,
+      talla: talla ?? null,
+      color: color ?? null,
+      medida: medida ?? null
+    });
     Swal.fire("✅ Producto agregado con éxito.", "", "success");
   }
 
@@ -334,7 +346,13 @@ window.agregarAlCarrito = (index) => {
     if (productoEnCarrito) {
       productoEnCarrito.cantidad += cantidad;
     } else {
-      carrito.push({ ...producto, cantidad, ...(talla && { talla }), ...(color && { color }) });
+      carrito.push({
+        ...producto,
+        cantidad,
+        talla: talla ?? null,
+        color: color ?? null,
+        medida: medida ?? null
+      });
       Swal.fire("✅ Producto agregado con éxito.", "", "success");
     }
 
@@ -387,7 +405,58 @@ window.agregarAlCarrito = (index) => {
         renderizarCarrito();
       });
     });
+
+    window.repetirPedido = (productosJSON) => {
+      const productos = JSON.parse(productosJSON);
+      productos.forEach(p => {
+        const productoEnCarrito = carrito.find(item =>
+          item.nombre === p.nombre &&
+          (item.talla ?? null) === (p.talla ?? null) &&
+          (item.color ?? null) === (p.color ?? null) &&
+          (item.medida ?? null) === (p.medida ?? null)
+        );
+
+        if (productoEnCarrito) {
+          productoEnCarrito.cantidad += p.cantidad;
+        } else {
+          carrito.push({ ...p,
+            talla: p.talla ?? null,
+            color: p.color ?? null,
+            medida: p.medida ?? null });
+        }
+      });
+
+      renderizarCarrito();
+      actualizarContadorCarrito();
+      Swal.fire("✅ Pedido agregado al carrito.", "", "success");
+    };
   };
+
+  function repetirPedido(productos) {
+  productos.forEach(p => {
+    const productoEnCarrito = carrito.find(item =>
+      item.nombre === p.nombre &&
+      (item.talla ?? null) === (p.talla ?? null) &&
+      (item.color ?? null) === (p.color ?? null) &&
+      (item.medida ?? null) === (p.medida ?? null)
+    );
+
+    if (productoEnCarrito) {
+      productoEnCarrito.cantidad += p.cantidad;
+    } else {
+      carrito.push({
+        ...p,
+        talla: p.talla ?? null,
+        color: p.color ?? null,
+        medida: p.medida ?? null
+      });
+    }
+  });
+
+  renderizarCarrito();
+  actualizarContadorCarrito();
+  Swal.fire("✅ Pedido agregado al carrito.", "", "success");
+}
 
   window.eliminarDelCarrito = (nombre) => {
     carrito = carrito.filter(item => item.nombre !== nombre);
@@ -440,8 +509,13 @@ window.agregarAlCarrito = (index) => {
       const productosConSubtotal = carrito.map(p => ({
         nombre: p.nombre,
         cantidad: p.cantidad,
-        precio: p.precio
+        precio: p.precio,
+        talla: p.talla ?? null,
+        color: p.color ?? null,
+        medida: p.medida ?? null
       }));
+
+
 
       const total = carrito.reduce((sum, p) => sum + (p.precio * p.cantidad), 0);
 
@@ -547,15 +621,28 @@ mensaje += `\n💰 *Total:* $${total}`;
               <strong>Pedido ${index + 1} - ${new Date(pedido.fecha).toLocaleString()}</strong>
               <ul>
                 ${pedido.productos.map(p => {
-                  const subtotal = p.precio * p.cantidad;
-                  return `<li>${p.nombre} (x${p.cantidad}) - $${p.precio} → Subtotal: $${subtotal.toFixed(0)}</li>`;
-                }).join("")}
+                const subtotal = p.precio * p.cantidad;
+                const tallaTexto = p.talla ? ` - Talla: ${p.talla}` : '';
+                const colorTexto = p.color ? ` - Color: ${p.color}` : '';
+                const medidaTexto = p.medida ? ` - Medida: ${p.medida}` : '';
+                return `<li>${p.nombre}${tallaTexto}${colorTexto}${medidaTexto} (x${p.cantidad}) - $${p.precio} → Subtotal: $${subtotal.toFixed(0)}</li>`;
+              }).join("")}
               </ul>
               <p><strong>Total del pedido:</strong> $${pedido.total?.toFixed(2) ?? "No disponible"}</p>
+              <button class="btn-repetir-pedido" data-productos='${JSON.stringify(pedido.productos)}'>
+                🔁 Repetir este pedido
+              </button>
             </div>
           `;
+
         });
         historialContenedor.innerHTML = html;
+          document.querySelectorAll(".btn-repetir-pedido").forEach(boton => {
+          boton.addEventListener("click", () => {
+            const productos = JSON.parse(boton.getAttribute("data-productos"));
+            repetirPedido(productos);
+          });
+        });
       }
     } catch (err) {
       console.error("Error al cargar historial:", err);
@@ -703,7 +790,13 @@ mensaje += `\n💰 *Total:* $${total}`;
   if (productoEnCarrito) {
     productoEnCarrito.cantidad += cantidad;
   } else {
-    carrito.push({ ...producto, cantidad, ...(talla && { talla }), ...(color && { color }), ...(medida && { medida }) });
+    carrito.push({
+      ...producto,
+      cantidad,
+      talla: talla ?? null,
+      color: color ?? null,
+      medida: medida ?? null
+    });
     Swal.fire("✅ Producto agregado con éxito.", "", "success");
   }
 
@@ -750,3 +843,6 @@ mensaje += `\n💰 *Total:* $${total}`;
   cargarClientesDesdeBackend();
 });
 document.getElementById("search").classList.remove("ocultar");
+
+
+

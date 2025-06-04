@@ -6,8 +6,12 @@ const Pedido = require('../models/Pedido');
 // Ruta POST para guardar un pedido
 router.post('/', async (req, res) => {
   try {
+    console.log("🔍 Pedido recibido en backend:");
+    console.log(JSON.stringify(req.body, null, 2)); // 👈 imprime el pedido recibido
+
     const nuevoPedido = new Pedido(req.body);
     await nuevoPedido.save();
+
     res.status(201).json(nuevoPedido);
   } catch (err) {
     console.error(err);
