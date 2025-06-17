@@ -539,7 +539,7 @@ window.agregarAlCarrito = (index) => {
         const fecha = ahora.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
         const hora = ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: true });
         // 4️⃣ Obtener dirección completa y ubicación en Google Maps
-        const direccionCompleta = `${clienteDatos.direccion}, ${clienteDatos.municipio}`;
+        const direccionCompleta = `${clienteDatos.direccion}, ${clienteDatos.municipio}, Cundinamarca`;
         const direccionMaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccionCompleta)}`;
 
         // 4️⃣ Crear mensaje de WhatsApp con info del cliente
