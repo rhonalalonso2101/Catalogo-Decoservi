@@ -194,6 +194,18 @@ header button:hover {
   display: none !important;
 }
 
+#datos-cliente {
+    margin-top: 10px;
+    background: #f3f3f3;
+    padding: 10px;
+    border-radius: 8px;
+    
+}
+
+#ver-datos-cliente {
+    width: 100px;
+}
+
 
 #historial-contenedor {
     margin-top: 10px;

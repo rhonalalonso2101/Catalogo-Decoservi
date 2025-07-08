@@ -27,6 +27,73 @@ const cerrarModalCliente = document.getElementById("cerrar-modal-cliente");
 const formNuevoCliente = document.getElementById("form-nuevo-cliente");
 const checkboxFactura = document.getElementById("cliente-factura");
 const camposFactura = document.getElementById("factura-extra");
+const btnVerDatosCliente = document.getElementById("ver-datos-cliente");
+const divDatosCliente = document.getElementById("datos-cliente");
+
+async function mostrarDatosCliente(nombre) {
+  try {
+    const res = await fetch(`https://catalogo-backend-jkhy.onrender.com/api/clientes/nombre/${encodeURIComponent(nombre)}`);
+    const cliente = await res.json();
+    if (!cliente || !cliente.nombre) {
+      Swal.fire("No se encontró el cliente.", "", "error");
+      return;
+    }
+
+    // Construir HTML estilo historial
+    let html = `<div class="pedido">`;
+    html += `<h3>Datos del Cliente</h3>`;
+    html += `<p><strong>👤 Nombre:</strong> ${cliente.nombre}</p>`;
+    html += `<p><strong>📞 Teléfono:</strong> ${cliente.telefono}</p>`;
+
+    const direccionCompleta = `${cliente.direccion}, ${cliente.municipio}, Cundinamarca`;
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccionCompleta)}`;
+    html += `<p><strong>🏠 Dirección:</strong> <a href="${mapsUrl}" target="_blank">${cliente.direccion}</a></p>`;
+
+    html += `<p><strong>🌆 Municipio:</strong> ${cliente.municipio}</p>`;
+    html += `<p><strong>🧾 Factura electrónica:</strong> ${cliente.requiereFactura ? "✅ Sí" : "❌ No"}</p>`;
+
+    if (cliente.requiereFactura) {
+      html += `<p><strong>🔢 NIT:</strong> ${cliente.nit}</p>`;
+      html += `<p><strong>📧 Correo:</strong> ${cliente.correo}</p>`;
+    }
+
+    html += `</div>`;
+
+    divDatosCliente.innerHTML = html;
+    divDatosCliente.classList.remove("hidden");
+    btnVerDatosCliente.textContent = "❌👤";
+
+  } catch (error) {
+    console.error("Error al obtener datos del cliente:", error);
+    Swal.fire("Error al obtener datos del cliente.", "", "error");
+  }
+}
+
+btnVerDatosCliente.addEventListener("click", async () => {
+  const nombre = clienteSelect.value;
+  if (!nombre) {
+    Swal.fire("Selecciona un cliente primero.", "", "warning");
+    return;
+  }
+
+  if (!divDatosCliente.classList.contains("hidden")) {
+    divDatosCliente.classList.add("hidden");
+    divDatosCliente.innerHTML = "";
+    btnVerDatosCliente.textContent = "👤";
+    return;
+  }
+
+  await mostrarDatosCliente(nombre);
+});
+
+// ✅ Actualizar automáticamente los datos si ya están visibles
+clienteSelect.addEventListener("change", () => {
+  const nombre = clienteSelect.value;
+  if (!divDatosCliente.classList.contains("hidden") && nombre) {
+    mostrarDatosCliente(nombre);
+  }
+});
+
 
 btnAgregarCliente.addEventListener("click", () => {
   modalCliente.classList.remove("hidden");
@@ -845,6 +912,7 @@ mensaje += `\n💰 *Total:* $${total}`;
   cargarClientesDesdeBackend();
 });
 document.getElementById("search").classList.remove("ocultar");
+
 
 
 

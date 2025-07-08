@@ -60,10 +60,20 @@
         <label for="cliente-select">Cliente:</label>
         <input list="clientes" id="cliente-select" placeholder="Escribe el nombre del cliente" autocomplete="off" />
         <datalist id="clientes"></datalist>
+        <button id="ver-datos-cliente" title="Ver información del cliente">👤</button>
         <button id="ver-historial">Historial</button>
       </div>
     </div>
-    
+    <div id="datos-cliente" class="hidden" style="margin-top: 10px; line-height: 1.6;">
+          <p><strong>Nombre:</strong> <span id="info-nombre"></span></p>
+          <p><strong>Teléfono:</strong> <span id="info-telefono"></span></p>
+          <p>
+            <strong>Dirección:</strong> 
+            <a href="#" id="info-direccion-link" target="_blank">
+              <span id="info-direccion"></span>
+            </a>
+          </p>
+    </div>
     <div id="historial-contenedor" class="hidden"></div>
   </header>
   <input type="text" id="search" class="ocultar" placeholder="Buscar productos..." />
