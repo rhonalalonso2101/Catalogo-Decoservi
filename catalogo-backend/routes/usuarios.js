@@ -57,7 +57,7 @@ router.post('/logout', (req, res) => {
 });
 
 // ✅ Exporta todas las rutas al final
-module.exports = router;
+
 router.get('/verificar-sesion', (req, res) => {
   if (req.session?.usuario) {
     res.json(req.session.usuario);
@@ -65,3 +65,4 @@ router.get('/verificar-sesion', (req, res) => {
     res.status(401).send('No autenticado');
   }
 });
+module.exports = router;

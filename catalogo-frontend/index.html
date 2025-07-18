@@ -128,9 +128,10 @@
     <!-- VERIFICACIÓN DE SESIÓN -->
   <script>
     async function verificarSesion() {
-      const res = await fetch('/verificar-sesion', {
+      const res = await fetch('https://catalogo-backend-jkhy.onrender.com/verificar-sesion', {
         credentials: 'include'
       });
+
 
       if (!res.ok) {
         // No hay sesión activa → redirigir
