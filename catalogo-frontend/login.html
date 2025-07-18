@@ -3,43 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <title>Iniciar sesión</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>Iniciar sesión</h2>
-  <form id="loginForm">
-    <input type="text" name="nombreUsuario" placeholder="Usuario" required><br>
-    <input type="password" name="contraseña" placeholder="Contraseña" required><br>
-    <button type="submit">Ingresar</button>
-  </form>
+  <div class="login-container">
+    <h2>Iniciar Sesión</h2>
+    <form id="loginForm">
+      <label for="nombreUsuario">Usuario:</label>
+      <input type="text" id="nombreUsuario" name="nombreUsuario" required>
+
+      <label for="contraseña">Contraseña:</label>
+      <input type="password" id="contraseña" name="contraseña" required>
+
+      <button type="submit">Ingresar</button>
+    </form>
+
+    <p id="mensajeError" style="color: red; margin-top: 10px;"></p>
+  </div>
 
   <script>
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    const data = {
-      nombreUsuario: e.target.nombreUsuario.value,
-      contraseña: e.target.contraseña.value
-    };
+      const nombreUsuario = document.getElementById('nombreUsuario').value;
+      const contraseña = document.getElementById('contraseña').value;
 
-    const res = await fetch('https://catalogo-backend-jkhy.onrender.com/login', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
+      try {
+        const res = await fetch('https://catalogo-backend-jkhy.onrender.com/login', {
+          method: 'POST',
+          credentials: 'include', // ✅ importante para sesiones
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nombreUsuario, contraseña })
+        });
 
-    if (res.ok) {
-      const { rol } = await res.json();
-      if (rol === 'admin') {
-        location.href = '/index.html';
-      } else {
-        location.href = '/index.html';
+        if (res.ok) {
+          const { rol } = await res.json();
+
+          // ✅ Redirección absoluta para producción
+          location.href = 'https://catalogo-decoservi.onrender.com/index.html';
+        } else {
+          const errorTexto = await res.text();
+          document.getElementById('mensajeError').innerText = errorTexto;
+        }
+      } catch (error) {
+        console.error('Error en login:', error);
+        document.getElementById('mensajeError').innerText = 'Error de red al intentar iniciar sesión.';
       }
-    } else {
-      alert('Usuario o contraseña incorrectos');
-    }
-  });
-</script>
-
+    });
+  </script>
 </body>
 </html>
