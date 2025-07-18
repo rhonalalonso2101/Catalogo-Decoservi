@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar sesión</title>
+</head>
+<body>
+  <h2>Iniciar sesión</h2>
+  <form id="loginForm">
+    <input type="text" name="nombreUsuario" placeholder="Usuario" required><br>
+    <input type="password" name="contraseña" placeholder="Contraseña" required><br>
+    <button type="submit">Ingresar</button>
+  </form>
+
+  <script>
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = {
+      nombreUsuario: e.target.nombreUsuario.value,
+      contraseña: e.target.contraseña.value
+    };
+
+    const res = await fetch('https://catalogo-backend-jkhy.onrender.com/login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+      const { rol } = await res.json();
+      if (rol === 'admin') {
+        location.href = '/index.html';
+      } else {
+        location.href = '/index.html';
+      }
+    } else {
+      alert('Usuario o contraseña incorrectos');
+    }
+  });
+</script>
+
+</body>
+</html>

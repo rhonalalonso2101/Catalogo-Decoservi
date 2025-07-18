@@ -1,5 +1,8 @@
 {
   "dependencies": {
-    "mongodb": "^6.16.0"
+    "bcrypt": "^6.0.0",
+    "express-session": "^1.18.1",
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.16.3"
   }
 }
