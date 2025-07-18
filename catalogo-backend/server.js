@@ -34,10 +34,12 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // true si usas https
-    maxAge: 1000 * 60 * 60 * 4 // (opcional) 4 horas
+    secure: true,         // ✅ producción HTTPS (Render)
+    sameSite: 'none',     // ✅ permitir cookies cross-origin
+    maxAge: 1000 * 60 * 60 * 4 // opcional: 4 horas
   }
 }));
+
 
 // 5. Conectar a MongoDB
 console.log('URI de MongoDB:', process.env.MONGO_URI);
