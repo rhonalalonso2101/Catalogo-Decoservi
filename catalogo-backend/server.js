@@ -28,6 +28,8 @@ app.use(cors({
 // 3. Middleware para parsear JSON
 app.use(express.json());
 
+// ✅ Esto le dice a Express que confíe en el proxy de Render
+app.set('trust proxy', 1);
 // 4. ✅ Configurar sesiones ANTES de las rutas
 app.use(session({
   secret: 'clave_secreta_segura',
