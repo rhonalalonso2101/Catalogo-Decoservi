@@ -1,0 +1,112 @@
+/* Fondo con imagen */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: url('https://images.pexels.com/photos/814499/pexels-photo-814499.jpeg') no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  position: relative;
+}
+
+/* Capa oscura encima de la imagen */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Cambia el último valor para más/menos opacidad */
+  z-index: 0;
+}
+
+#logo {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+#logo:hover {
+  transform: translateX(-50%) scale(1.05);
+}
+
+
+/* Contenedor del formulario */
+.login-container {
+  border-radius: 15px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  padding: 40px 30px;
+  width: 100%;
+  max-width: 400px;
+  z-index: 1;
+  position: relative;
+  margin-top: 50px;
+}
+
+
+/* Título */
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 700;
+  color: white;
+}
+
+/* Etiquetas */
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: white;
+}
+
+/* Campos de entrada */
+input[type="text"],
+input[type="password"] {
+  background: transparent;
+  width: 90%;
+  padding: 12px 20px;
+  margin-bottom: 20px;  
+  background: rgba(255, 255, 255, 0.08); /* ← Blanco con 20% de opacidad */
+  border: none;
+  color: #fff; /* ← Texto blanco */
+  border-radius: 30px;
+  outline: none;
+  border: 1px solid transparent;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+  color: rgba(255, 255, 255, 0.7); /* Placeholder claro */
+}
+
+
+/* Botón */
+button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background-color: #0d701eaf;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+  background-color: #0b5ed7;
+}
+
+/* Mensaje de error */
+#mensajeError {
+  text-align: center;
+  font-weight: bold;
+}
