@@ -23,17 +23,14 @@ body {
 }
 
 #logo {
-  position: absolute;
-  top: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+  display: block;
+  margin: 0 auto 20px auto;
   width: 120px;
-  z-index: 2;
   transition: transform 0.3s ease;
 }
 
 #logo:hover {
-  transform: translateX(-50%) scale(1.05);
+  transform: translateY(-10%) scale(1.05);
 }
 
 
@@ -46,7 +43,6 @@ body {
   max-width: 400px;
   z-index: 1;
   position: relative;
-  margin-top: 50px;
 }
 
 
